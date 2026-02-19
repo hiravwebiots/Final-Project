@@ -15,7 +15,7 @@ const createTask = async (req, res) => {
 
         const user = await userModel.findById(assignedTo)
         if(!user){
-            return res.status(500).send({ status : 0, message : "user not found" })
+            return res.status(404).send({ status : 0, message : "user not found" })
         }
 
         // Title & Description required

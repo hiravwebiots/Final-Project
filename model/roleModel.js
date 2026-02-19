@@ -7,9 +7,13 @@ const roleSchema = mongoose.Schema({
         unique : true   // no duplicate role
     },
 
-    permissions : {
-        type  : mongoose.Schema.Types.ObjectId,
+    description : {
+        type  : String,
         ref : 'permission'
+    },
+    isActive : {
+        type : Boolean,
+        default : true
     }
 },
     {

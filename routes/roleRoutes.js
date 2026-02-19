@@ -4,4 +4,4 @@ const routes = express()
 
 routes.post('/create', createRole)
 
-module.export = routes
+module.exports = routes

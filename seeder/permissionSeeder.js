@@ -18,7 +18,7 @@ const seedPermissions = async () => {
             const exists = await permissionModel.findOne({ name: perm.name });
 
             if (!exists) {
-                await permissionModel.create(perm);
+                await permissionModel.create(perm); 
                 console.log(`Created: ${perm.name}`);
             } else {
                 console.log(`Already Exists: ${perm.name}`);
