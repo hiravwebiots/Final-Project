@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const rolePermissionModel = require('../model/rolePermissionModel')
 const roleModel = require('../model/roleModel')
 const permissionModel = require('../model/permissionModel')
@@ -9,36 +8,37 @@ const createRolePermission = async (req, res) => {
 
         // ===== Validate RoleId ======
         if(!RoleId){
-            return res.status(500).send({ status : 0, message : "role id is required"})
+            return res.status(500).send({ status : 0, message : "role is required"})
         }
 
         const role = await roleModel.findById(RoleId)
         if(!role){
             return res.status(404).send({ status : 0, message : "role not found" })
         }
-        console.log("role : ", role);
         
-
-        // ===== Validate PemissionId ======
+        // ===== Validate PermissionId ======        
         if(!PermissionId){
-            return res.status(500).send({ status : 0, message : "prmission id is required" })
+            return res.status(500).send({ status : 0, message : "permission is required" })
         }
 
-        console.log("PermissionId : ", PermissionId);
-
-        const permission = await permissionModel.findById([PermissionId])
-        console.log('permission : ', permission);
+        const permission = await permissionModel.findById(PermissionId)
         if(!permission){
             return res.status(404).send({ status : 0, message : "permission not found" })
         }
 
+        const exist = await rolePermissionModel.findOne({
+            RoleId,
+           PermissionId
+        })
+        if(exist){
+            return res.status(400).send({ status : 0, message : "Already Exist!" })
+        }
 
         // =========== Saved Role has Permission ========= 
         const assignPermission = new rolePermissionModel(req.body) 
-        const savedROlePermission = await assignPermission.save()
-        console.log("ROle-Permission : ", savedROlePermission);
+        const savedRolePermission = await assignPermission.save()
 
-        res.status(201).send({ status : 1, message : "rolePermission Created", data : savedROlePermission})
+        res.status(201).send({ status : 1, message : "rolePermission Created", data : savedRolePermission})
 
     } catch(err){
         console.log(err);

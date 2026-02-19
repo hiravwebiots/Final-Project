@@ -1,4 +1,5 @@
 const roleModel = require('../model/roleModel')
+const rolePermissionModel = require('../model/rolePermissionModel')
 
 const createRole = async (req, res) => {
     try{
@@ -25,4 +26,28 @@ const createRole = async (req, res) => {
     }
 }
 
-module.exports = { createRole }
+const deleteRole = async (req, res) => {
+    try{
+        const roleId = req.params.id
+        const deleterole = await roleModel.findByIdAndDelete(roleId)
+        
+        if(!deleterole){
+            res.status(404).send({ status : 0, message : "role not found" })
+        }
+        
+        if(deleterole){
+            const deleterolePermission = await rolePermissionModel.deleteMany({
+                RoleId : roleId
+            })
+        }   
+      
+
+        res.status(200).send({ status : 1, message : "Delete role & rolepermission Successfully" })
+    } catch(err){
+        console.log(err);
+        res.status(500).send({ status : 0, message : "Error while delete role", data : err })
+
+    }
+}
+
+module.exports = { createRole, deleteRole }

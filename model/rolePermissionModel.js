@@ -8,10 +8,10 @@ const rolePermissionSchema = mongoose.Schema({
     },
     PermissionId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'permissiom',
+        ref : 'permission',
         required : true
     }
 })
-
+    
 const rolePermissionModel = mongoose.model('rolePermission', rolePermissionSchema)
 module.exports = rolePermissionModel
