@@ -27,7 +27,6 @@ const sendEmail = async (to, subject, templateContent, data) => {
         const html = compiledTemplate(data);
 
         console.log("subject  : ", subject);
-        
     
         const info = await transporter.sendMail({
             from: process.env.EMAIL,

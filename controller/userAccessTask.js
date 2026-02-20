@@ -4,7 +4,6 @@ const { validateStatus } = require('../utils/utilityTask')
 
 const getTaskbyUser = async (req, res) => {
     try{
-
         const taskList = await taskModel.find({ assignedTo : req.user._id })
         
         res.status(200).send({ status : 1, message : "Get Task List Successfully", data : taskList })
@@ -12,10 +11,9 @@ const getTaskbyUser = async (req, res) => {
         console.log(err);
         res.status(500).send({ status : 0, message : "Error While get user assigned task list" })
     }
-}   
+} 
 
-
-// Pending 
+// ======== user update Task Status Only ===========
 const updateTaskbyUser = async (req, res) => {
     try{    
         let taskId = req.params.id
@@ -24,8 +22,7 @@ const updateTaskbyUser = async (req, res) => {
         let userId = req.user._id
         console.log(`userID ${userId}`);
 
-        const { title, status } = req.body    
-
+        const { status } = req.body    
         
         if(status && !validateStatus(status)){
             return res.status(400).send({ status : 0, message : "status must be 'pending' or 'success'"})
@@ -41,7 +38,7 @@ const updateTaskbyUser = async (req, res) => {
             { new : true }
         )
         console.log(updateTask);
-          
+
         if(!updateTask){
             res.status(500).send({ status : 0, message : "Task not found or not assigned to this user"})
         }

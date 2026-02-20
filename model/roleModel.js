@@ -8,9 +8,9 @@ const roleSchema = mongoose.Schema({
     },
 
     description : {
-        type  : String,
-        ref : 'permission'
+        type  : String
     },
+
     isActive : {
         type : Boolean,
         default : true

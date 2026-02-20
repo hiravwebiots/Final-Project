@@ -25,7 +25,7 @@ const checkAuthentication = (req, res, next) => {
 const checkRoleAuthorization = (allowRole) => {
     return (req, res, next) => {
         try{    
-            if(allowRole.includes(req.user.role)){
+            if(allowRole.includes(req.user.roleId)){
                 next()
             } else{
                 return res.status(500).send({status : 0, message : 'you are not authorize for this operation!'})

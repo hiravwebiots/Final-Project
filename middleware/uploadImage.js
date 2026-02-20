@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname)) 
     }
 })
-                                           
+
 const fileFilter = (req, file, cb) => {
     /**File : {
         fieldname: 'profileImage',
@@ -43,7 +43,7 @@ const uploadImage = (req, res, next) => {
         if(err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE'){
                 return res.status(400).send({ status : 0, message : "File Size is to large"})
             }
-        
+
         if(err){
             console.log(err);
             return res.status(500).send({ status : 0, message : err.message })
@@ -51,5 +51,5 @@ const uploadImage = (req, res, next) => {
             next()
         })
     }
- 
+
 module.exports = uploadImage

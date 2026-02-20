@@ -1,28 +1,23 @@
 const userModel = require('../model/userModel')
+const roleModel = require('../model/roleModel')
 const otpModel = require('../model/otpModel')   
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const emailTemplateModel = require('../model/emailTemplateModel')
 const sendEmail = require("../utils/sendEmail")
 
 const loginUser = async (req, res) => {
     try{
-
         const { email, password } = req.body;
 
-        const user = await userModel.findOne({ email })
+        const user = await userModel.findOne({ email }).populate("roleId")
         if(!user){
-            return res.status(404).send({
-                status : 0,
-                message : "user not found, enter registerd email addresss",
-            })
+            return res.status(404).send({ status : 0, message : "user not found, enter registerd email addresss" })
         }
 
         const isPassword = await bcrypt.compare(password, user.password)
         if(!isPassword){
-            return res.status(404).send({
-                status : 0,
-                message : "Invalid password "
-            })
+            return res.status(404).send({ status : 0, message : "Invalid password" })
         }
 
         // Password not show in during login
@@ -31,25 +26,16 @@ const loginUser = async (req, res) => {
         const tokenObj = {
             _id : user._id,
             email : user.email,
-            role : user.role
+            roleId : user.roleId.name
         }
 
         const token = jwt.sign(tokenObj, process.env.SECRET_KEY, {expiresIn : '1h'})
 
-        res.status(200).send({
-            status : 1,
-            message : "login Successfully",
-            token : token,
-            data : user
-        })
+        res.status(200).send({ status : 1, message : "login Successfully", token : token, data : user })
 
     } catch(err){
         console.log(err);
-        res.status(500).send({
-            status : 0,
-            message : "Error While Login User",
-            error : err
-        })
+        res.status(500).send({ status : 0, message : "Error While Login User", error : err })
     }
 }
 
@@ -78,6 +64,24 @@ const sendOtp = async (req, res) => {
         await otpData.save()
 
         otpData.otpExpire = Date.now() + 5 * 60 * 1000;
+
+        // ===== Find Email Template ======
+        const template = await emailTemplateModel.find({ title : "Forgot Password" })
+
+        if(!template){
+            return res.status(500).send({ status : 0, message : "Template not found" })
+        }
+
+        if(template){
+            await sendEmail(
+                user.email,
+                template.subject,
+                template.content,
+                {
+                    
+                }
+            )
+        }
 
         await sendEmail(
             email,
@@ -146,16 +150,12 @@ const forgotPassword = async (req, res) => {
         await user.save()
         await otp.save()
 
-        res.status(200).send({
-            status : 1,
-            message : "Password forgot successfully"
-        })
+        res.status(200).send({ status : 1, message : "Password forgot successfully" })
 
     } catch(err){
         console.log(err);
         res.status(500).send({ status : 0, message : "error forgot Password", error : err})
     }
 }
-
 
 module.exports = { loginUser, sendOtp, verifyOtp, forgotPassword};

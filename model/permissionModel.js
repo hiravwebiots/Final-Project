@@ -9,8 +9,7 @@ const permissionSchema = mongoose.Schema({
 
     module : {
         type : String,
-        required : true,            // Depends : 'create_user, update_user', 'task_create, task_update' 'project' etc...    
-        trim : true
+        required : true,           
     }
 },{
     timestamps : true

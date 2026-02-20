@@ -1,7 +1,7 @@
 const taskModel = require('../model/taskModel')
 const userModel = require('../model/userModel')
 const { validateStatus, validateDate } = require('../utils/utilityTask')
-const emailTemplateModel = require('../model/emailModel')
+const emailTemplateModel = require('../model/emailTemplateModel')
 const sendEmail = require('../utils/sendEmail')
 
 const createTask = async (req, res) => {
@@ -66,7 +66,6 @@ const createTask = async (req, res) => {
             return res.status(500).send({ status : 0, message : "Template not found" })
         }
 
-
         if(template){
             await sendEmail(
                 user.email,              // to    
@@ -78,45 +77,20 @@ const createTask = async (req, res) => {
                 }
             )
         }
-
-        // userFind.email,
-        // "Assign the Task",
-        // `<h3> New Task Assign : ${title} </h3>
-        // Compalte the task Before ${dueDate}`
-
-        
-        res.status(201).send({
-            status : 1,
-            message : "Add Task Successfully",
-            data : savedTask
-        })
-
-
+        res.status(201).send({ status : 1, message : "Add Task Successfully", data : savedTask })
     } catch(err){
         console.log(err);
-        res.status(500).send({
-            status : 0,
-            message : "Error While Add Task",
-            error : err
-        })
+        res.status(500).send({ status : 0, message : "Error While Add Task", error : err })
     }
 }
 
 const getTask = async (req, res) => {
     try{
         const tasks = await taskModel.find()
-        res.status(200).send({
-            status : 1,
-            message : "Get Task Successfully",
-            data : tasks
-        })
+        res.status(200).send({ status : 1, message : "Get Task Successfully", data : tasks })
     } catch(err){
         console.log(err);
-        res.status(500).send({
-            status : 0,
-            message : "Erro While Get Task",
-            error : err
-        })
+        res.status(500).send({ status : 0, message : "Erro While Get Task", error : err })
     }
 }
 
@@ -129,8 +103,8 @@ const updateTask = async (req, res) => {
             return res.status(400).send({ status : 0, message : "assigned the task" })
         }
 
-        const userFind = await userModel.findById(assignedTo)
-        if(!userFind){
+        const user = await userModel.findById(assignedTo)
+        if(!user){
             return res.status(500).send({ status : 0, message : "user not found" })
         }
         
@@ -186,24 +160,14 @@ const updateTask = async (req, res) => {
         )
 
         if(!updateTask){
-            return res.status(404).send({
-                status : 0,
-                message : 'Task not Found!'
-            })
+            return res.status(404).send({ status : 0, message : 'Task not Found!' })
         }
 
-        res.status(200).send({
-            status : 1,
-            message : "update Task Successfully",
-            data : updateTask
-        })
+        res.status(200).send({ status : 1, message : "update Task Successfully", data : updateTask })
 
     } catch(err){
         console.log(err);
-        res.status(500).send({
-            status : 0,
-            message : "Error While Update Task"
-        })
+        res.status(500).send({ status : 0, message : "Error While Update Task", error : err})
     }
 }
 
@@ -213,23 +177,14 @@ const deleteTask = async (req, res) => {
         const deleteTask = await taskModel.findByIdAndDelete(taskId)
 
         if(!deleteTask){
-            return res.status(404).send({
-                status : 0,
-                message : 'Task not Found!'
-            })
+            return res.status(404).send({ status : 0, message : 'Task not Found!' })
         }
 
-        res.status(200).send({
-            status : 1,
-            message : "Delete Task Successfully"
-        })
+        res.status(200).send({ status : 1, message : "Delete Task Successfully" })
     }
     catch(err){
         console.log(err);
-        res.status(500).send({
-            status : 0,
-            message : "Error While Delete Task"
-        })
+        res.status(500).send({ status : 0, message : "Error While Delete Task" })
     }
 }
  

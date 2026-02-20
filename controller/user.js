@@ -1,13 +1,12 @@
 const userModel = require('../model/userModel')
+const roleModel = require('../model/roleModel')
 const bcrypt = require('bcrypt')
 const validationRole = require('../utils/utilityUserRole')
 
 // ============= CREATE USER ============
 const createUser = async (req, res) => {
     try{
-
-        const { name, email, password, phone } = req.body
-
+        const { name, email, password, phone, roleId, profileImage,  avatarIcon} = req.body
 
         // ======== Required Filled Check ========== 
         if(!name){
@@ -17,7 +16,7 @@ const createUser = async (req, res) => {
         if(!email ){
             return res.status(400).send({ status : 0, message : "email is requies" })
         }
-        
+
         if(!password){
             return res.status(400).send({ status : 0, message : "password is required" })
         }
@@ -26,23 +25,32 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status : 0, message : "phone is required" })
         }
 
-        if(!req.file){      
-            return res.status(400).send({ status : 0, message : "profile Image required" })
-        }
+        // if(!req.file){      
+        //     return res.status(400).send({ status : 0, message : "profile Image required" })
+        // }
 
         // ========== EMAIL VALIDATION ==========
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;    // Test is method of Reg. Expression for check string match or not
-        if(!emailRegex.test(email)){
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;    
+        if(!emailRegex.test(email)){                            // test is method of RegExpression for check string match or not
             return res.status(400).send({ status : 0, message : "Invalid email format" })
         }
 
         // ========== PHONE VALIDATION ==========
         const phoneRegex = /^[6-9]\d{9}$/ 
-        if(!phoneRegex.test(phone)){
+        if(!phoneRegex.test(phone)){      
             return res.status(400).send({ status : 0, message : "Invalid phone formate" })
-        }   
-        
-        // // ========== ROLE VALIDATION ==========
+        }
+
+        // ========== ROLE VALIDATION ==========
+        if(!roleId){
+            return res.status(500).send({ status : 0, message : "please enter the role" })
+        }
+
+        const existRole = await roleModel.findById(roleId)
+        if(!existRole){
+            return res.status(404).send({ status : 0, message : "role not found" })
+        }
+
         // if(role && !validationRole(role)){
         //     return res.status(400).send({ status : 0, message : "role must be 'admin' or 'employee'" })
         // }
@@ -55,22 +63,13 @@ const createUser = async (req, res) => {
 
         // ========== HASH PASSWORD ==========
         const hashpassword = await bcrypt.hash(req.body.password, 11)
-        
-        // ========== CREATE USER ==========
-        const newUser = new userModel({
-            name, 
-            email,
-            password : hashpassword,
-            phone,
-            // role : role || 'employee',
-            profileImage : req.file.path,
-            avatarIcon : req.file.path
-        })
+        req.body.password = hashpassword
 
+        // ========== CREATE USER ==========
+        const newUser = new userModel(req.body)
         const savedUser = await newUser.save()
 
         res.status(201).send({ status : 1, message : "user add Successfully", data : savedUser})
-
     } catch(err){
         console.log(err);
         res.status(500).send({ status : 0, message : "Error while creating user", error : err })
@@ -80,7 +79,7 @@ const createUser = async (req, res) => {
 // ============= FETCH ALL USER ============
 const getUsers = async (req, res) => {
     try{
-        const user = await userModel.find({"role" : "employee"}).select('-password -otp -otpExpire')
+        const user = await userModel.find().select('-password -otp -otpExpire')
         res.status(200).send({ status : 0, message : "user fetched Successfully", data : user})
     } catch (err){
         console.log(err);
@@ -97,9 +96,7 @@ const getUserById = async (req, res) => {
         if(!user){
             res.status(500).send({ status : 0, message : "user not found" })
         }
-
         res.status(200).send({ status : 0, message : "user fetched Successfully", data : user})
-        
     } catch (err){
         console.log(err);
         res.status(500).send({ status : 0, message : "Error While fetching user", error : err })
@@ -110,7 +107,7 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try{
         const userId = req.params.id;
-        const { name, email, password, phone} = req.body
+        const { name, email, password, phone, roleId, profileImage,  avatarIcon} = req.body
 
         // ======== Check user Exists ========== 
         const user = await userModel.findById(userId)
@@ -133,12 +130,23 @@ const updateUser = async (req, res) => {
         }
 
         // ======== Phone Validation ========== 
-        const phoneRegex = /^[6-9]\d{9}$/ 
-        if(!phoneRegex.test(phone)){
-            return res.status(400).send({ status : 0, message : "Invalid phone formate" })
-        }   
+        if(phone){
+            const phoneRegex = /^[6-9]\d{9}$/ 
+            if(!phoneRegex.test(phone)){
+                return res.status(400).send({ status : 0, message : "Invalid phone formate" })
+            }   
+        }
         
-        // // ======== Role Validation =========
+        // ========== ROLE VALIDATION ==========
+        if(!roleId){
+            return res.status(500).send({ status : 0, message : "please enter the role" })
+        }
+
+        const existRole = await roleModel.findById(roleId)
+        if(!existRole){
+            return res.status(404).send({ status : 0, message : "role not found" })
+        }
+
         // if(role && !['admin', 'employee'].includes(role)){
         //     return res.status(400).send({ status : 0, message : "role must be 'admin' or 'employee' " })
         // }
@@ -147,8 +155,10 @@ const updateUser = async (req, res) => {
         const updateData = {
             name : req.body.name || user.name,
             email : req.body.email || user.email, 
-            phone : req.body.phone || user.phone
-            // role : req.body.role || user.role
+            phone : req.body.phone || user.phone,
+            roleId : req.body.roleId || user.roleId,
+            profileImage : req.file.path || user.profileImage || null,
+            avatarIcon : req.file.path || user.avatarIcon || null
         }
 
         // ======== Password Update ==========
@@ -175,14 +185,12 @@ const updateUser = async (req, res) => {
             userId,
             updateData,
             { new : true}
-        ).select('-password -otp -otpExpire')
+        ).select('-password ')
 
         if(!updateUser){
             return res.send(404).send({ status : 0, message : "user not found" })
         }
-
         res.status(200).send({ status : 1, message : "update User Successfully", data : updateUser })
-
     } catch(err){
         console.log(err);
         res.status(500).send({ status : 0, message : "Error While updating user", error : err })
@@ -214,4 +222,4 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser }  
+module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser }
