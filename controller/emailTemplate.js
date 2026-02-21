@@ -16,11 +16,12 @@ const createTemplate = async(req, res) => {
             return res.status(400).send({ statis : 0, message : "content is required" })
         }
 
-        const template = new emailModel(req.body)
+        const template = new emailTemplateModel(req.body)
         const savedTemplate = await template.save()
 
         res.status(201).send({ status : 0, message : "Templte Created" , data : savedTemplate})
     } catch(err){
+        console.log(err);
         res.status(500).send({ status : 0, message : err.message })
     }
 }
@@ -28,9 +29,9 @@ const createTemplate = async(req, res) => {
 const readTemplate = async(req, res)  => {
     try{
         const readTemp = await emailTemplateModel.find()
-        res.statis(200).send({ status : 0, message : 'read All email template', data : readTemp})
+        res.status(200).send({ status : 0, message : 'read All email template', data : readTemp})
     } catch(err){
-        res.statis(500).send({ status : 0, message : 'Error while get All template', error : err })
+        res.status(500).send({ status : 0, message : 'Error while get All template', error : err })
     }
 }
 

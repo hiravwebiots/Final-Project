@@ -1,5 +1,5 @@
 const validateStatus = (status) => {
-    return ['pending', 'success'].includes(status.toLowerCase())
+    return ['pending', 'in progress', 'success'].includes(status.toLowerCase())
 }
 
 const validateDate = (date) => {

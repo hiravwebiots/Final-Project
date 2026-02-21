@@ -1,5 +1,4 @@
 const userModel = require('../model/userModel')
-const roleModel = require('../model/roleModel')
 const otpModel = require('../model/otpModel')   
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -11,6 +10,7 @@ const loginUser = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await userModel.findOne({ email }).populate("roleId")
+        // const user = await userModel.findOne({email})
         if(!user){
             return res.status(404).send({ status : 0, message : "user not found, enter registerd email addresss" })
         }
@@ -26,7 +26,8 @@ const loginUser = async (req, res) => {
         const tokenObj = {
             _id : user._id,
             email : user.email,
-            roleId : user.roleId.name
+            roleId : user.roleId,
+            name : user.roleId.name
         }
 
         const token = jwt.sign(tokenObj, process.env.SECRET_KEY, {expiresIn : '1h'})
@@ -62,12 +63,14 @@ const sendOtp = async (req, res) => {
             isOtpVerified : false
         })
         await otpData.save()
-
+        console.log("otpData : ", otpData);
+        
         otpData.otpExpire = Date.now() + 5 * 60 * 1000;
 
         // ===== Find Email Template ======
-        const template = await emailTemplateModel.find({ title : "Forgot Password" })
-
+        const template = await emailTemplateModel.findOne({ title : "Send OTP for Forgot Password" })
+        console.log("template : ", template);
+        
         if(!template){
             return res.status(500).send({ status : 0, message : "Template not found" })
         }
@@ -75,20 +78,20 @@ const sendOtp = async (req, res) => {
         if(template){
             await sendEmail(
                 user.email,
-                template.subject,
+                template.subject,       
                 template.content,
                 {
-                    
+                    otp : otpData.otp
                 }
             )
         }
+        // await sendEmail(
+        //     email,
+        //     "passwoed Forgot OTP",
+        //     `<h3>Your otp is ${otp}</h3>
+        //     <p> valid for 5 minutes </p>`
+        // )
 
-        await sendEmail(
-            email,
-            "passwoed Forgot OTP",
-            `<h3>Your otp is ${otp}</h3>
-            <p> valid for 5 minutes </p>`
-        )
         res.status(200).send({ status : 1, message : "otp sent to email" })
     } catch(err){
         console.log(err);

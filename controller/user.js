@@ -8,6 +8,8 @@ const createUser = async (req, res) => {
     try{
         const { name, email, password, phone, roleId, profileImage,  avatarIcon} = req.body
 
+        console.log("BODY:", req.body)
+        console.log("FILE:", req.file)
         // ======== Required Filled Check ========== 
         if(!name){
             return res.status(400).send({ status : 0, message : "name is required" })
@@ -25,9 +27,10 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status : 0, message : "phone is required" })
         }
 
-        // if(!req.file){      
-        //     return res.status(400).send({ status : 0, message : "profile Image required" })
-        // }
+        // Profile Image
+        if(!req.file){      
+            return res.status(400).send({ status : 0, message : "profile Image required" })
+        }
 
         // ========== EMAIL VALIDATION ==========
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;    
@@ -63,10 +66,19 @@ const createUser = async (req, res) => {
 
         // ========== HASH PASSWORD ==========
         const hashpassword = await bcrypt.hash(req.body.password, 11)
-        req.body.password = hashpassword
+        // req.body.password = hashpassword
+        
+        const userData = {
+            name,
+            email,
+            password : hashpassword,
+            phone, 
+            roleId,
+            profileImage : req.file.filename
+        }
 
         // ========== CREATE USER ==========
-        const newUser = new userModel(req.body)
+        const newUser = new userModel(userData)
         const savedUser = await newUser.save()
 
         res.status(201).send({ status : 1, message : "user add Successfully", data : savedUser})

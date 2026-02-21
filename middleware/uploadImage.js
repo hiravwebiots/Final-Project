@@ -48,8 +48,8 @@ const uploadImage = (req, res, next) => {
             console.log(err);
             return res.status(500).send({ status : 0, message : err.message })
         }
-            next()
-        })
-    }
+        next()
+    })
+}
 
 module.exports = uploadImage

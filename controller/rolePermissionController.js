@@ -49,8 +49,8 @@ const createRolePermission = async (req, res) => {
 const readRolePermission = async (req, res) => {
     try{
         // =========== Read rolePermission ==============
-        const read = new rolePermissionModel.find()
-        res.status(200).send({ status : 0, message : 'get all rolePermission' })
+        const read = await rolePermissionModel.find()
+        res.status(200).send({ status : 0, message : 'get all rolePermission', data : read })
     } catch(err){
         console.log(err);
         res.status(500).send({ status : 0, message : "error while read rolePermission" })
@@ -82,7 +82,7 @@ const updateRolePermission = async (req, res) => {
         const { RoleId, PermissionId } = req.body
 
         // ===== checkRolePermission Exist =========
-        const rolePer = await rolePermissionModel.find(rolePermissionId)
+        const rolePer = await rolePermissionModel.findById(rolePermissionId)
         if(!rolePer){
             return res.status(500).send({ status : 0, message : "not found role has permission" })
         }
@@ -104,8 +104,8 @@ const updateRolePermission = async (req, res) => {
 
         // ======== update Object =============
         const updateData = {
-            RoleId : req.body.RoleId || roleper.RoleId,
-            PermissionId : req.body.PermissionId || roleper.PermissionId
+            RoleId : req.body.RoleId || rolePer.RoleId,
+            PermissionId : req.body.PermissionId || rolePer.PermissionId
         }
 
         // ============ update role & permission =========

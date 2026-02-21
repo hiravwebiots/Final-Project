@@ -22,8 +22,12 @@ transporter.verify((err, success) => {
 /** Send Email Function */
 const sendEmail = async (to, subject, templateContent, data) => {
     try{
+        console.log('working');
+        
         // Compile template (Handlebars)  --> for dynamic Template for email
         const compiledTemplate = handlebars.compile(templateContent);
+        console.log("templateContent : ", templateContent);
+        
         const html = compiledTemplate(data);
 
         console.log("subject  : ", subject);

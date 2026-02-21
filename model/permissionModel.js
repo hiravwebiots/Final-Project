@@ -6,11 +6,6 @@ const permissionSchema = mongoose.Schema({
         required : true,
         unique : true
     },
-
-    module : {
-        type : String,
-        required : true,           
-    }
 },{
     timestamps : true
 })

@@ -26,7 +26,7 @@ const createTask = async (req, res) => {
         // if status not entered then it's by default pending       
         // status --> pending or success
         if(status && !validateStatus(status)){
-            return res.status(400).send({ status : 0, message : "status must be 'pending' or 'success' " })
+            return res.status(400).send({ status : 0, message : "status must be 'pending', 'in progress' or 'success' "})
         }
 
         // assign Date --> must be Date Formate
