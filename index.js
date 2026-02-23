@@ -15,6 +15,7 @@ const app = express()
 connectDB()
 
 // add body parser for data in postman
+app.set('view engine', 'ejs')
 app.use(bodyParser.json())
 app.use('/upload', express.static('/uploads'))
 app.use('/api/task', taskRoutes)
