@@ -82,6 +82,9 @@ const createUser = async (req, res) => {
         const savedUser = await newUser.save()
 
         res.status(201).send({ status : 1, message : "user add Successfully", data : savedUser})
+        // res.redirect('/users')   
+        res.render('cre', { user })
+
     } catch(err){
         console.log(err);
         res.status(500).send({ status : 0, message : "Error while creating user", error : err })

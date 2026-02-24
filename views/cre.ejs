@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title> Test ejs </title>
+    </head>
+    <body>
+            
+        <h2> Test Create User Demo </h2>
+        
+        <form action="/add" method="post", enctype="multipart/form-data">
+            Name : <input type="text", name="name"> <br><br>
+            Email : <input type="email", name="email" required> <br><br>
+            Password : <input type="password", name="password"> <br><br>
+            Phone : <input type="number", name="'phone"><br><br>
+        
+            Role : 
+            <select name="roleId">
+                <% roles.forEach((role) => { %>
+                    <option value="<%= role._id %>">
+                        <% role.roleName %>
+                    </option>
+                <% }) %>
+            </select><br><br>
+        
+            Image : <input type="file" name="profileImage"><br><br>
+        
+            <button type="submit">Create</button>
+        </form>
+    </body>
+</html>
+
+

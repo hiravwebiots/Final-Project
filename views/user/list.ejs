@@ -1,0 +1,23 @@
+<h2>User List</h2>
+
+<table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Phone</th>
+        <th>roleId</th>
+        <th>profileImage</th>
+    </tr>
+
+    <% users.forEach((user) => { %>
+        <tr>
+            <td><%= user.name %></td>
+            <td><%= user.email %></td>
+            <td><%= user.password></td>
+            <td><%= user.phone %></td>
+            <td><%= user.roleId %></td>
+            <td><%= user.profileImage %></td>
+        </tr>
+    <% }) %>
+</table>
