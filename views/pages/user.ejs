@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
+    <link rel="stylesheet" href="/style/sidebar.css">
+
+</head>
+<body>
+
+        <%- include("../partials/sidebar.ejs") %>
+    <%- include("../partials/header.ejs") %>
+
+    <main class="main-content">
+        <h1>User</h1>
+        <p>Welcome to user page.</p>
+    </main>
+
+
+    <form action="/api/login/user/create" method="POST" enctype="multipart/form-data">
+        <input type="text" name="name" placeholder="Enter Name" required>
+        <br><br>
+
+        <input type="email" name="email" placeholder="Enter Email" required>
+        <br><br>
+
+        <input type="password" name="password" placeholder="Enter Password" required>
+        <br><br>
+
+        <input type="text" name="phone" placeholder="Enter Phone Number" required>
+        <br><br>
+
+        <select name="roleId" required>
+            <option value="">Select Role</option>
+            <% roles.forEach((role) => { %>
+                <option value="<%= role._id %>">
+                    <%= role.roleName %>
+                </option>
+            <% }) %>
+        </select>
+        <br><br>
+
+        <input type="file" name="profileImage" >
+        <BR></BR>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

@@ -12,12 +12,15 @@ const loginUser = async (req, res) => {
         const user = await userModel.findOne({ email }).populate("roleId")
         // const user = await userModel.findOne({email})
         if(!user){
-            return res.status(404).send({ status : 0, message : "user not found, enter registerd email addresss" })
+            // return res.status(404).send({ status : 0, message : "user not found, enter registerd email addresss" })
+            return res.render('pages/login',{error : "user not found, enter registerd email addresss" })
         }
 
         const isPassword = await bcrypt.compare(password, user.password)
         if(!isPassword){
-            return res.status(404).send({ status : 0, message : "Invalid password" })
+            // return res.status(404).send({ status : 0, message : "Invalid password" })
+            return res.render('pages/login', {error : "Invalid password"})
+
         }
 
         // Password not show in during login
@@ -30,13 +33,18 @@ const loginUser = async (req, res) => {
             name : user.roleId.name
         }
 
+        res.cookie
+
         const token = jwt.sign(tokenObj, process.env.SECRET_KEY, {expiresIn : '1h'})
 
-        res.status(200).send({ status : 1, message : "login Successfully", token : token, data : user })
+
+        res.redirect('/api/login/dashboard')
+        // res.status(200).send({ status : 1, message : "login Successfully", token : token, data : user })
 
     } catch(err){
         console.log(err);
-        res.status(500).send({ status : 0, message : "Error While Login User", error : err })
+        // res.status(500).send({ status : 0, message : "Error While Login User", error : err })
+        res.render('login', {error : err})
     }
 }
 

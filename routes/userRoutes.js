@@ -6,13 +6,6 @@ const checkPermission = require('../middleware/checkPermission')
 const routes = express()
 
 routes.post("/add", checkAuthentication, checkPermission('create_user'), uploadImage, createUser)
-
-// // EJS
-// routes.get('/create', async (req, res) => {
-//     const roles = await require('../model/roleModel').find()
-//     res.render('create', { roles })
-// })
-
 routes.get('/get', checkAuthentication, checkPermission('view_user'), getUsers)
 routes.get('/get/:id', checkAuthentication, checkPermission('view_user'), getUserById)
 routes.put('/update/:id', checkAuthentication, checkPermission('update_user'), uploadImage, updateUser)

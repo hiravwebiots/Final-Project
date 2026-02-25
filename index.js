@@ -5,6 +5,7 @@ const connectDB = require("./config/db")
 const taskRoutes = require("./routes/taskRoutes")
 const loginRoutes = require("./routes/loginRoutes")
 const userRoutes = require('./routes/userRoutes')
+const userViewRoutes = require('./routes/userViewRoutes')
 const userTaskAccessRoutes = require('./routes/userTaskAccessRoutes')
 const emailTemplateRoutes = require('./routes/emailTemplateRoutes')
 const rolePermissionRoutes = require('./routes/rolePermissionRoutes')
@@ -24,13 +25,14 @@ app.use(bodyParser.json())
 app.use(express.static("public"))                   // Whithout public we can't access public folder
 
 app.set('view engine', 'ejs')
-// app.set('views', path.join(__dirname, 'views'))
 
 app.use('/upload', express.static('/uploads'))
 
 app.use('/api/task', taskRoutes)
 app.use('/api/login', loginRoutes)
+app.use('/api/login', userViewRoutes)
 app.use('/api/user', userRoutes)
+
 app.use('/api/task', userTaskAccessRoutes)
 app.use('/api/template', emailTemplateRoutes)
 // app.use('/api/permission', permissionRoutes)
