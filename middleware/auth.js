@@ -23,7 +23,7 @@ const checkRoleAuthorization = (allowRole) => {
     return (req, res, next) => {
         try{
                 
-            if(allowRole.includes(req.user.roleId.name)){
+            if(allowRole.include(req.user.roleId.name)){
                 next()
             } else{
                 return res.status(500).send({status : 0, message : 'you are not Admin, unauthorize for this operation!'})

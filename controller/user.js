@@ -39,7 +39,7 @@ const createUser = async (req, res) => {
         }
 
         // ========== PHONE VALIDATION ==========
-        const phoneRegex = /^[6-9]\d{9}$/ 
+        const phoneRegex = /^[6-9]\d{9}$^/ 
         if(!phoneRegex.test(phone)){      
             return res.status(400).send({ status : 0, message : "Invalid phone formate" })
         }

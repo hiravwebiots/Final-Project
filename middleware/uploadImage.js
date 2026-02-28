@@ -50,6 +50,6 @@ const uploadImage = (req, res, next) => {
         }
         next()
     })
-}
+}   
 
 module.exports = uploadImage
